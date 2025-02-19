@@ -1,0 +1,13 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <h1>Auth App</h1>
+    <div class="nav-buttons">
+      <button routerLink="/login">Login</button>
+      <button routerLink="/signup">Signup</button>
+    </div>
+  </div>
+</nav>
+<h1 *ngIf="isWelcomePage()" id="msg">Welcome to web</h1>
+<div class="content">
+  <router-outlet></router-outlet>
+</div>
