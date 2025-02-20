@@ -1,75 +1,42 @@
-<form (ngSubmit)="signupUser()" #signupForm="ngForm">
-  <div class="form-container">
-    <h2>Sign Up</h2>
-
-    
-    <!-- Username Field -->
+<div class="card">
+  <h2>Sign Up</h2>
+  <form #signupForm="ngForm" (ngSubmit)="signupUser()" novalidate>
     <div class="form-group">
-      <label for="username">Username</label>
-      <input type="text" id="username" class="form-control" [(ngModel)]="user.username" name="username" required />
+      <input type="text" name="name" [(ngModel)]="user.username" required placeholder="Username">
     </div>
 
-    <!-- Email Field -->
     <div class="form-group">
-      <label for="email">Email</label>
-      <input 
-        type="email" 
-        id="email" 
-        class="form-control" 
-        [(ngModel)]="user.email" 
-        name="email" 
-        required 
-        #email="ngModel" 
-        email 
-      />
-      <div *ngIf="email.invalid && email.touched" class="error-message">
-        <p *ngIf="email.errors?.['required']" id="er">Email is required.</p>
-        <p *ngIf="email.errors?.['email']" id="er">Please enter a valid email address.</p>
-      </div>
+      <input type="email" name="email" [(ngModel)]="user.email" required email placeholder="Email"
+             #emailInput="ngModel">
+      <small *ngIf="emailInput.invalid && emailInput.touched" class="error">
+        {{ emailInput.errors?.['required'] ? 'Email is required.' : 'Invalid email format.' }}
+      </small>
     </div>
 
-    <!-- Password Field -->
     <div class="form-group">
-      <label for="password">Password</label>
-      <input 
-        type="password" 
-        id="password" 
-        class="form-control" 
-        [(ngModel)]="user.password" 
-        name="password" 
-        required 
-        minlength="8" 
-        [pattern]="passwordPattern" 
-        #password="ngModel"
-      />
-      <div *ngIf="password.invalid && password.touched" class="error-message">
-        <p *ngIf="password.errors?.['minlength']" id="er">Password must be at least 8 characters long.</p>
-        <p *ngIf="password.errors?.['pattern']" id="er">Password must contain an uppercase letter, a number, and a special character.</p>
-      </div>
+      <input type="password" name="password" [(ngModel)]="user.password" required
+             pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+             #passwordInput="ngModel" placeholder="Password">
+      <small *ngIf="passwordInput.invalid && passwordInput.touched" class="error">
+        Password must be at least 8 characters long, with one uppercase, one lowercase, one number, and one special character.
+      </small>
     </div>
 
-    <!-- Confirm Password Field -->
     <div class="form-group">
-      <label for="confirmPassword">Confirm Password</label>
-      <input 
-        type="password" 
-        id="confirmPassword" 
-        class="form-control" 
-        [(ngModel)]="user.confirmPassword" 
-        name="confirmPassword" 
-        required 
-        #confirmPassword="ngModel"
-      />
-      <div *ngIf="!isPasswordMatch() && confirmPassword.touched" class="error-message" id="er">
-        <p>Passwords do not match!</p>
-      </div>
+      <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" required
+             #confirmPasswordInput="ngModel" placeholder="Confirm Password">
+      <small *ngIf="user.password !== confirmPassword && confirmPasswordInput.touched" class="error">
+        Passwords do not match.
+      </small>
     </div>
 
-    <!-- Submit Button -->
-    <button type="submit" class="btn" [disabled]="signupForm.invalid">Sign Up</button>
-    <div *ngIf="errorMessage" class="error-message" style="color: red;">
-      <p>{{ errorMessage }}</p>
+    <button type="submit" [disabled]="!signupForm.valid || user.password !== confirmPassword">
+      Sign Up
+    </button>
+    <div *ngIf="errorMessage">
+      <p class ="error">{{errorMessage}}</p>
+      <p >Proceed to <a href="/login">LOGIN?</a></p>
     </div>
     
-  </div>
-</form>
+  </form>
+</div>

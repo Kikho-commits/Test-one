@@ -1,4 +1,4 @@
-/* Navbar styles */
+
 .navbar {
     background-color: #007bff;
     padding: 15px;
@@ -42,5 +42,5 @@
     transform: translate(-50%, -50%); 
     text-align: center;
     font-size: 2em;
-    color: #007bff;
+    color: #0b1c2e;
   }

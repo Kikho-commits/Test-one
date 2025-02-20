@@ -1,55 +1,45 @@
-import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+  import { Component } from '@angular/core';
+  import { AuthService } from '../../sevices/auth.service';  
+  import { CommonModule } from '@angular/common';
+  import { FormsModule } from '@angular/forms';
 
-@Component({
-  selector: 'app-signup',
-  standalone: true,
-  imports: [FormsModule, CommonModule],
-  providers: [AuthService],
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.css']
-})
-export class SignupComponent {
-  
-  user = {
-    username: '', 
-    email: '',
-    password: '',
-    confirmPassword: ''
-  };
+  @Component({
+    selector: 'app-signup',
+    standalone: true,
+    imports: [FormsModule, CommonModule],
+    providers: [AuthService],  
+    templateUrl: './signup.component.html',
+    styleUrl: './signup.component.css'
+  })
+  export class SignupComponent {
+    user = {
+      username: '',
+      email: '',
+      password: ''
+    };
 
-  passwordPattern = '^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%^&*(),.?":{}|<>]).{8,}$';
-
-
-  errorMessage: string = ''; 
-
-  constructor(private authService: AuthService) {}
-
-  signupUser() {
-    // Check if passwords match
-    if (!this.isPasswordMatch()) {
-      this.errorMessage = 'Passwords do not match!';
-      return;
-    }
-
-    this.errorMessage = ''; 
-
-    if (this.user.username && this.user.email && this.user.password) {
-      this.authService.signup(this.user).subscribe(
-        (response) => {
-          console.log('User signed up successfully:', response);
-        },
-        (error) => {
-          this.errorMessage = 'User Already exist!';
-        }
-      );
-    }
-  }
-
-  isPasswordMatch(): boolean {
+    confirmPassword: String ='';
     
-    return this.user.password === this.user.confirmPassword;
+    errorMessage : String ='';
+
+
+    constructor(private authService: AuthService) {}
+
+    signupUser() {
+     
+      this.errorMessage='';
+      if (this.user.username && this.user.email && this.user.password) {
+        this.authService.signup(this.user).subscribe(
+          (response) => {
+            console.log('User signed up successfully:', response);
+          },
+          (error) => {
+            this.errorMessage = JSON.stringify(error.error) || "Signup Failed!"; 
+          }
+        );
+      }
+    }
+    isPasswordMatch() {
+      return this.user.password === this.confirmPassword;
+    }
   }
-}

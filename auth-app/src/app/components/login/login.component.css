@@ -44,8 +44,7 @@
   button.btn:disabled {
     background-color: #ccc;
   }
-
-  #er{
+  
+  .error{
     color: red;
   }
-  
