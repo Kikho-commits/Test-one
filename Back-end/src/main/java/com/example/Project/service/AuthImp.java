@@ -41,7 +41,7 @@ public class AuthImp implements Auth{
 
     @Override
     public String valid(LoginRequest loginRequest) {
-       // return loginRequest.getEmail()+"\n"+loginRequest.getPassword();
+
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword()));
         if(authentication.isAuthenticated()){
             return "Ok";

@@ -23,7 +23,7 @@ public class CustomerServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // Write logic to fetch customer from DB
+
         com.example.Project.entity.User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Customer not found with email: " + email));
 
