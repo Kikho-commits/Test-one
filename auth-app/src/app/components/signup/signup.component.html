@@ -37,6 +37,11 @@
       <p class ="error">{{errorMessage}}</p>
       <p >Proceed to <a href="/login">LOGIN?</a></p>
     </div>
+
+    <div *ngIf="!errorMessage">
+      <p>Already have an acccount ? <a href="/login">Login</a>  
+      </p>
+    </div>
     
   </form>
 </div>

@@ -45,6 +45,11 @@
     background-color: #ccc;
   }
   
-  .error{
+  .error {
     color: red;
+    font-size: 20px;
+    display: block;
+    margin-top: 25px;
+    text-align: center;
   }
+  

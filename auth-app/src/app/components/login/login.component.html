@@ -17,6 +17,10 @@
         </div>
   
         <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Login</button>
+
+        <p class="error" *ngIf="errorMessage">{{errorMessage}}!</p>
+
+        <p style="text-align: center;">Dont have an account? <a href="/signup">SignUp</a></p>        
       </form>
     </div>
   </div>

@@ -3,6 +3,7 @@ import { AuthService } from '../../sevices/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import {CookieService} from 'ngx-cookie-service';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -19,20 +20,19 @@ export class LoginComponent {
 
   errorMessage : String ='';
 
-  constructor(private authService: AuthService, private route:Router) {}
+  constructor(private authService: AuthService, private route:Router,private cookieService : CookieService) {}
 
   loginUser() {
     if (this.user.email && this.user.password) {
       this.authService.login(this.user).subscribe(
         (response) => {
-  
-          localStorage.setItem('token', response.token);
-  
-          
+            
+          this.authService.setToken(response.token);
           this.route.navigate(['/dashboard']);
+          
         },
         (error) => {
-          this.errorMessage = JSON.stringify(error.error) || "Login Failed!"; 
+          this.errorMessage = "Invalid Credentials"
         }
       );
     }

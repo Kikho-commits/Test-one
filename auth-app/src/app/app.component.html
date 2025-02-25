@@ -1,9 +1,9 @@
 <nav class="navbar">
   <div class="nav-container">
-    <h1>Auth App</h1>
+    <h1>Web Authentication</h1>
     <div class="nav-buttons">
-      <button routerLink="/login">Login</button>
-      <button routerLink="/signup">Signup</button>
+      <button *ngIf="isWelcomePage()" routerLink="/login">Login</button>
+      <button *ngIf="isWelcomePage()" routerLink="/signup">Signup</button>
     </div>
   </div>
 </nav>
