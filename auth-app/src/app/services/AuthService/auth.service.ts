@@ -25,7 +25,6 @@ export class AuthService {
   }
 
   setToken(token : string){
-      this.cookieService.deleteAll();
       this.cookieService.set('token',token);
       this.router.navigate(['/inventory'])
   }

@@ -21,7 +21,7 @@ export class ProductComponent implements OnInit {
   currentProduct: Product | null = null;
 
   currentPage: number = 1;
-  pageSize: number = 3;
+  pageSize: number = 5;
   totalPages: number = 0;
 
   constructor(private productService: ProductService, private fb: FormBuilder, private snackBar : SnackbarService) {
