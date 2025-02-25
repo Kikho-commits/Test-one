@@ -2,6 +2,7 @@ package com.example.Project.controller;
 
 import com.example.Project.dto.LoginResponse;
 import com.example.Project.dto.LoginRequest;
+import com.example.Project.dto.ResetRequest;
 import com.example.Project.dto.SignupRequest;
 import com.example.Project.entity.User;
 import com.example.Project.service.Auth;
@@ -24,7 +25,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin (origins = "*")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class AuthController {
 
     private final CustomerServiceImpl customerService;
@@ -67,9 +68,18 @@ public class AuthController {
             return null;
         }
         final UserDetails userDetails = customerService.loadUserByUsername(loginRequest.getEmail());
-        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
+        final String jwt = jwtUtil.generateToken(userDetails.getUsername()  );
 
 
         return new LoginResponse(jwt);
     }
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetRequest resetRequest){
+        User response = auth.resetPassword(resetRequest);
+        if(response!=null){
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }else{
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Email!");
+        }
+    };
 }

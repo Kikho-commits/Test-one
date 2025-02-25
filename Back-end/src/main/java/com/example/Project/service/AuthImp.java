@@ -1,6 +1,7 @@
 package com.example.Project.service;
 
 import com.example.Project.dto.LoginRequest;
+import com.example.Project.dto.ResetRequest;
 import com.example.Project.dto.SignupRequest;
 import com.example.Project.entity.User;
 import com.example.Project.repository.UserRepository;
@@ -36,6 +37,23 @@ public class AuthImp implements Auth{
         User createdUser = userRepository.save(user);
         user.setId(createdUser.getId());
         return user;
+    }
+
+    @Override
+    public User resetPassword(ResetRequest resetRequest) {
+        if(!userRepository.existsByEmail(resetRequest.getEmail())){
+            return null;
+        }
+        else{
+            User user=userRepository.findByEmail(resetRequest.getEmail()).get();
+            if (!passwordEncoder.matches(resetRequest.getCurrentPassword(), user.getPassword())) {
+                return null;
+            }
+            user.setPassword(passwordEncoder.encode(resetRequest.getNewPassword()));
+            userRepository.save(user);
+            return user;
+        }
+
     }
 
 

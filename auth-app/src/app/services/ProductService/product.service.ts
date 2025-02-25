@@ -20,21 +20,20 @@ export class ProductService {
   }
 
   
-  getAllProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.apiUrl, { headers: this.createHeaders() });
+  getAllProducts(page: number, size: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}?page=${page}&size=${size}`, {
+      headers: this.createHeaders(),
+    });
   }
-
 
   addProduct(product: Product): Observable<Product> {
     return this.http.post<Product>(this.apiUrl, product, { headers: this.createHeaders() });
   }
 
-  
   updateProduct(id: number, product: Product): Observable<Product> {
     return this.http.put<Product>(`${this.apiUrl}/${id}`, product, { headers: this.createHeaders() });
   }
 
-  
   deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.createHeaders() });
   }

@@ -15,16 +15,15 @@ import { SnackbarService } from '../../services/SnackbarServices/snackbar.servic
 })
 export class ProductComponent implements OnInit {
   products: Product[] = [];
-  paginatedProducts: Product[] = [];
   productFormVisible: boolean = false;
   productForm: FormGroup;
   currentProduct: Product | null = null;
 
-  currentPage: number = 1;
+  currentPage: number = 0; 
   pageSize: number = 5;
   totalPages: number = 0;
 
-  constructor(private productService: ProductService, private fb: FormBuilder, private snackBar : SnackbarService) {
+  constructor(private productService: ProductService, private fb: FormBuilder, private snackBar: SnackbarService) {
     this.productForm = this.fb.group({
       productName: ['', Validators.required],
       quantity: [0, [Validators.required, Validators.min(1)]],
@@ -38,51 +37,34 @@ export class ProductComponent implements OnInit {
   }
 
   getProducts(): void {
-    this.productService.getAllProducts().subscribe({
+    this.productService.getAllProducts(this.currentPage, this.pageSize).subscribe({
       next: (data) => {
-        this.products = [...data]; 
-        this.currentPage = 1; 
-        this.updatePagination();
+        this.products = data.content; 
+        this.totalPages = data.totalPages;
       },
       error: (error) => {
         console.error('Error fetching products:', error);
         this.products = [];
-        this.updatePagination();
+        this.totalPages = 0;
       }
     });
   }
 
-  updatePagination(): void {
-    if (!this.products || this.products.length === 0) {
-      this.paginatedProducts = [];
-      this.totalPages = 0;
-      return;
-    }
-
-    this.totalPages = Math.ceil(this.products.length / this.pageSize);
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = Math.min(startIndex + this.pageSize, this.products.length);
-    
-    
-    this.paginatedProducts = this.products.slice(startIndex, endIndex);
-  }
-
   changePage(direction: number): void {
     const newPage = this.currentPage + direction;
-    if (newPage >= 1 && newPage <= this.totalPages) {
+    if (newPage >= 0 && newPage < this.totalPages) {
       this.currentPage = newPage;
-      this.updatePagination();
+      this.getProducts();
     }
   }
 
   isPreviousDisabled(): boolean {
-    return this.currentPage <= 1 || this.totalPages === 0;
+    return this.currentPage <= 0;
   }
 
   isNextDisabled(): boolean {
-    return this.currentPage >= this.totalPages || this.totalPages === 0;
+    return this.currentPage >= this.totalPages - 1;
   }
-
 
   toggleProductForm(): void {
     this.productFormVisible = !this.productFormVisible;
@@ -112,7 +94,6 @@ export class ProductComponent implements OnInit {
         this.snackBar.showSnackBar("Product Added!");
       });
     }
-    
   }
 
   deleteProduct(id: number | undefined): void {
