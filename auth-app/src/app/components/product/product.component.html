@@ -1,0 +1,47 @@
+<div class="product-form-row" *ngIf="productFormVisible">
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="form-container">
+    <input formControlName="productName" placeholder="Product Name" required />
+    <input formControlName="quantity" placeholder="Quantity" type="number" required />
+    <input formControlName="price" placeholder="Price" type="number" required />
+    <input formControlName="supplierName" placeholder="Supplier Name" required />
+    
+    <button type="submit">{{ currentProduct?.id ? 'Update' : 'Create' }}</button>
+    <button type="button" class="cancel-btn" (click)="toggleProductForm()">Cancel</button>
+  </form>
+</div>
+
+<button (click)="toggleProductForm()" *ngIf="!productFormVisible">Add Product</button>
+
+<table *ngIf="paginatedProducts.length > 0; else noProducts">
+  <thead>
+    <tr>
+      <th>Product Name</th>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>Supplier Name</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let product of paginatedProducts">
+      <td>{{ product.productName }}</td>
+      <td>{{ product.quantity }}</td>
+      <td>{{ product.price }}</td>
+      <td>{{ product.supplierName }}</td>
+      <td>
+        <button (click)="editProduct(product)">Edit</button>
+        <button (click)="deleteProduct(product.id)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #noProducts>
+  <p>No products available</p>
+</ng-template>
+
+<div class="pagination">
+  <button [disabled]="isPreviousDisabled()" (click)="changePage(-1)">Previous</button>
+  <span>Page {{ currentPage }} of {{ totalPages || 1 }}</span>
+  <button [disabled]="isNextDisabled()" (click)="changePage(1)">Next</button>
+</div>

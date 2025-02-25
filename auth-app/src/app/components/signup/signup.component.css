@@ -1,56 +1,27 @@
-.card {
-  width: 350px;
-  padding: 30px;  
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  margin: auto;
+.signup-form {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-h2 {
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-input {
+.full-width {
   width: 100%;
-  padding: 12px;  
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-  box-sizing: border-box; 
-}
-
-input:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-.error {
-  color: red;
-  font-size: 20px;
-  display: block;
-  margin-top: 25px;
 }
 
 button {
   width: 100%;
-  padding: 12px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  padding: 10px;
   font-size: 16px;
-  margin-top: 10px;
 }
 
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.error-message {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
 }

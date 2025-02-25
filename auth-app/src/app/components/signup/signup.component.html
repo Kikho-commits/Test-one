@@ -1,47 +1,48 @@
-<div class="card">
-  <h2>Sign Up</h2>
-  <form #signupForm="ngForm" (ngSubmit)="signupUser()" novalidate>
-    <div class="form-group">
-      <input type="text" name="name" [(ngModel)]="user.username" required placeholder="Username">
-    </div>
 
-    <div class="form-group">
-      <input type="email" name="email" [(ngModel)]="user.email" required email placeholder="Email"
-             #emailInput="ngModel">
-      <small *ngIf="emailInput.invalid && emailInput.touched" class="error">
-        {{ emailInput.errors?.['required'] ? 'Email is required.' : 'Invalid email format.' }}
-      </small>
-    </div>
+<form [formGroup]="signupForm" (ngSubmit)="signupUser()" class="signup-form">
+  <mat-card-header>
+    <mat-card-title class="text-center" style="font-size: 1.5em;">Signup</mat-card-title>
+  </mat-card-header>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Username</mat-label>
+    <input matInput type="text" formControlName="username">
+    <mat-error *ngIf="signupForm.get('username')?.invalid && signupForm.get('username')?.touched">
+      Username is required
+    </mat-error>
+  </mat-form-field>
 
-    <div class="form-group">
-      <input type="password" name="password" [(ngModel)]="user.password" required
-             pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-             #passwordInput="ngModel" placeholder="Password">
-      <small *ngIf="passwordInput.invalid && passwordInput.touched" class="error">
-        Password must be at least 8 characters long, with one uppercase, one lowercase, one number, and one special character.
-      </small>
-    </div>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Email</mat-label>
+    <input matInput type="email" formControlName="email">
+    <mat-error *ngIf="signupForm.get('email')?.invalid && signupForm.get('email')?.touched">
+      Enter a valid email
+    </mat-error>
+  </mat-form-field>
 
-    <div class="form-group">
-      <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" required
-             #confirmPasswordInput="ngModel" placeholder="Confirm Password">
-      <small *ngIf="user.password !== confirmPassword && confirmPasswordInput.touched" class="error">
-        Passwords do not match.
-      </small>
-    </div>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Password</mat-label>
+    <input matInput type="password" formControlName="password">
+    <mat-error *ngIf="signupForm.get('password')?.invalid && signupForm.get('password')?.touched">
+      Password is required
+    </mat-error>
+  </mat-form-field>
 
-    <button type="submit" [disabled]="!signupForm.valid || user.password !== confirmPassword">
-      Sign Up
-    </button>
-    <div *ngIf="errorMessage">
-      <p class ="error">{{errorMessage}}</p>
-      <p >Proceed to <a href="/login">LOGIN?</a></p>
-    </div>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Confirm Password</mat-label>
+    <input matInput type="password" formControlName="confirmPassword">
+    <mat-error *ngIf="!isPasswordMatch() && signupForm.get('confirmPassword')?.touched">
+      Passwords do not match
+    </mat-error>
+  </mat-form-field>
 
-    <div *ngIf="!errorMessage">
-      <p>Already have an acccount ? <a href="/login">Login</a>  
-      </p>
-    </div>
-    
-  </form>
-</div>
+  <button mat-raised-button color="primary" type="submit" [disabled]="signupForm.invalid || !isPasswordMatch()">
+    Sign Up
+  </button>
+  
+  <mat-card *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </mat-card>
+ <p style="text-align: center;">Already Have an account ? <a href="/login">Login</a>
+ </p>
+
+</form>

@@ -4,10 +4,13 @@
     <div class="nav-buttons">
       <button *ngIf="isWelcomePage()" routerLink="/login">Login</button>
       <button *ngIf="isWelcomePage()" routerLink="/signup">Signup</button>
+      <button *ngIf="isInventory()" (click)="logout()">Logout</button>
+      <button *ngIf="isWelcomePage()" routerLink="/resetPassword">Reset Password</button>
+      <button *ngIf="!isWelcomePage() && !isInventory()" routerLink="/">Home</button>
     </div>
   </div>
 </nav>
-<h1 *ngIf="isWelcomePage()" id="msg">Welcome to web</h1>
+<h1 *ngIf="isWelcomePage()" id="msg">Inventory</h1>
 <div class="content">
   <router-outlet></router-outlet>
 </div>
