@@ -2,7 +2,7 @@
   <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="form-container">
     <input formControlName="productName" placeholder="Product Name" required />
     <input formControlName="quantity" placeholder="Quantity" type="number" required />
-    <input formControlName="price" placeholder="Price" type="number" required />
+    <input formControlName="price" placeholder="₹ Price" type="number" required />
     <input formControlName="supplierName" placeholder="Supplier Name" required />
 
     <button type="submit">{{ currentProduct?.id ? 'Update' : 'Create' }}</button>
@@ -10,7 +10,10 @@
   </form>
 </div>
 
-<button (click)="toggleProductForm()" *ngIf="!productFormVisible">Add Product</button>
+<div class="addBtn">
+  <button (click)="toggleProductForm()" *ngIf="!productFormVisible">Add Product</button>
+</div>
+
 
 <table *ngIf="products.length > 0; else noProducts">
   <thead>
@@ -26,7 +29,7 @@
     <tr *ngFor="let product of products">
       <td>{{ product.productName }}</td>
       <td>{{ product.quantity }}</td>
-      <td>{{ product.price }}</td>
+      <td>₹{{ product.price }}</td>
       <td>{{ product.supplierName }}</td>
       <td>
         <button (click)="editProduct(product)">Edit</button>
@@ -40,8 +43,9 @@
   <p>No products available</p>
 </ng-template>
 
-<div class="pagination">
-  <button [disabled]="isPreviousDisabled()" (click)="changePage(-1)">Previous</button>
-  <span>Page {{ currentPage + 1 }} of {{ totalPages || 1 }}</span> <!-- Adjusted for 0-based index -->
-  <button [disabled]="isNextDisabled()" (click)="changePage(1)">Next</button>
-</div>
+<mat-paginator
+  [length]="totalRecords"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="[5, 10, 20]"
+  (page)="onPageChange($event)">
+</mat-paginator>

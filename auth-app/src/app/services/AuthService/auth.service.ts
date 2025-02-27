@@ -20,8 +20,9 @@ export class AuthService {
     return this.http.post<RegisterResponse>('http://localhost:8080/api/signup', user);  
   }
 
-  login(user: any): Observable<any> {
-    return this.http.post('http://localhost:8080/api/login', user);  
+  //Change 1
+  login(user: LoginUser): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>('http://localhost:8080/api/login', user);  
   }
 
   setToken(token : string){
@@ -29,13 +30,15 @@ export class AuthService {
       this.router.navigate(['/inventory'])
   }
 
-  removeToken(token:string){
-    this.cookieService.delete(token);
+  removeToken(){
+    this.cookieService.delete('token');
   }
 
-
-
-  resetPassword(user : any){
+  resetPassword(user : object){
     return this.http.post('http://localhost:8080/api/resetPassword', user);
+  }
+
+  isLoggedIn():boolean{
+    return this.cookieService.check('token');
   }
 }

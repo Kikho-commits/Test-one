@@ -1,10 +1,32 @@
 package com.example.Project.dto;
 
+import java.time.LocalDateTime;
+
 public class ProductRequest {
     private String productName;
     private int quantity;
     private double price;
     private String supplierName;
+    private LocalDateTime createdTime;
+
+
+    public LocalDateTime getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(LocalDateTime updatedTime) {
+        this.updatedTime = updatedTime;
+    }
+
+    public LocalDateTime getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(LocalDateTime createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    private LocalDateTime updatedTime;
 
     public String getProductName() {
         return productName;

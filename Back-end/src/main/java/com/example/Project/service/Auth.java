@@ -6,7 +6,6 @@ import com.example.Project.dto.SignupRequest;
 import com.example.Project.entity.User;
 
 public interface Auth {
-    public String valid(LoginRequest loginRequest);
 
     public User createUser(SignupRequest signupRequest);
 

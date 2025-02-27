@@ -85,7 +85,7 @@ button:hover {
 
 .pagination {
   display: flex;
-  justify-content: left;
+  justify-content: flex-end;
   align-items: center;
   margin-top: 10px;
 }
@@ -103,4 +103,10 @@ button:hover {
 .pagination button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+
+.addBtn {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
 }

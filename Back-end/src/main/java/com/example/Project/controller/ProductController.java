@@ -1,9 +1,11 @@
 package com.example.Project.controller;
 
+import com.example.Project.dto.ProductResponse;
 import com.example.Project.entity.Product;
 import com.example.Project.service.ProductService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.Project.dto.ProductRequest;
 
@@ -17,20 +19,16 @@ public class ProductController {
 
     
     @GetMapping
-    public Page<Product> getAllProducts(
+    public ProductResponse getAllProducts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "40") int size) {
         return productService.getAllProducts(page, size);
     }
-
     @PostMapping
     public Product addProduct(@RequestBody ProductRequest productRequest) {
         Product product = new Product();
-        product.setProductName(productRequest.getProductName());
-        product.setQuantity(productRequest.getQuantity());
-        product.setPrice(productRequest.getPrice());
-        product.setSupplierName(productRequest.getSupplierName());
-        return productService.addProduct(product);
+        BeanUtils.copyProperties(productRequest,product);
+        return productService.addProduct(product)   ;
     }
 
     @PutMapping("/{id}")
@@ -39,7 +37,8 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
+        return ResponseEntity.ok().build();
     }
 }

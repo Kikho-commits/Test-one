@@ -1,6 +1,7 @@
 package com.example.Project.service;
 
 import com.example.Project.dto.ProductRequest;
+import com.example.Project.dto.ProductResponse;
 import com.example.Project.entity.Product;
 import com.example.Project.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,19 @@ public class ProductService {
     private ProductRepository productRepository;
 
 
-    public Page<Product> getAllProducts(int page, int size) {
+    public ProductResponse getAllProducts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return productRepository.findAll(pageable);
+        Page<Product> productPage = productRepository.findByDeletedFalse(pageable);
+
+        return new ProductResponse(
+                productPage.getContent(),
+                productPage.getTotalPages(),
+                productPage.getTotalElements()
+        );
     }
 
     public Product addProduct(Product product) {
+        product.setDeleted(false);
         return productRepository.save(product);
     }
 
@@ -41,7 +49,13 @@ public class ProductService {
     }
 
     public void deleteProduct(Long productId) {
-        Optional<Product> product = productRepository.findById(productId);
-        product.ifPresent(productRepository::delete);
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            product.setDeleted(true);
+            productRepository.save(product);
+        } else {
+            throw new RuntimeException("Product not found");
+        }
     }
 }

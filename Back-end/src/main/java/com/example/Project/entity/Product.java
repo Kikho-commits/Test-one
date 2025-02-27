@@ -2,6 +2,8 @@ package com.example.Project.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name="products")
 public class Product {
@@ -13,6 +15,32 @@ public class Product {
     private int quantity;
     private double price;
     private String supplierName;
+    private Boolean deleted = false;
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdTime;
+
+    private LocalDateTime updatedTime;
+
+    @PrePersist
+    protected void onCreate() {
+        createdTime = LocalDateTime.now();
+        updatedTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedTime = LocalDateTime.now();
+    }
+
 
     public Long getId() {
         return id;

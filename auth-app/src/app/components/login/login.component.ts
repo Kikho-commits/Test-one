@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,34 +8,47 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { SnackbarService } from '../../services/SnackbarServices/snackbar.service';
 import { AuthService } from '../../services/AuthService/auth.service';
+import { CookieService } from 'ngx-cookie-service';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms'; 
+import { LoginUser } from '../../models/auth.models';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule,MatFormFieldModule,
-    MatInputModule,MatButtonModule,MatIconModule,MatCardModule],  
+  imports: [FormsModule, CommonModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatCardModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrl : './login.component.css'
+  styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  user = {
-    email: '',
-    password: ''
-  };  
+  
+  loginForm = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', Validators.required)
+  });
 
-  errorMessage : String ='';
+  constructor(private authService: AuthService, private snackBar: SnackbarService, private cookieService: CookieService, private route : Router) {}
 
-  constructor(private authService : AuthService, private snackBar : SnackbarService) {}
-
+  ngOnInit(): void {
+    if (this.cookieService.check("token")) {
+      this.route.navigate(['/inventory']);
+    }
+  }
+  
   loginUser() {
-    if (this.user.email && this.user.password) {
-      this.authService.login(this.user).subscribe(
+    if (this.loginForm.valid) { 
+      this.authService.login(this.loginForm.value as LoginUser).subscribe(
         (response) => {
           this.authService.setToken(response.jwt);
-          this.snackBar.showSnackBar("Login Successful!",'Ok');
+          this.snackBar.showSnackBar("Login Successful!", 'Ok');
+          this.route.navigate(['/inventory']);
         },
         (error) => {
-          this.errorMessage = "Invalid Credentials"
+          if (error.status === 403) {
+            this.snackBar.showSnackBar("Incorrect email or password!", 'Ok');
+          }else {
+            this.snackBar.showSnackBar("An error occurred. Please try again.", 'Ok');
+          }
         }
       );
     }

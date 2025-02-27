@@ -1,6 +1,6 @@
 <nav class="navbar">
   <div class="nav-container">
-    <h1>Web Authentication</h1>
+    <h1>{{isInventory()?"Inventory":"Web Authentication"}}</h1>
     <div class="nav-buttons">
       <button *ngIf="isWelcomePage()" routerLink="/login">Login</button>
       <button *ngIf="isWelcomePage()" routerLink="/signup">Signup</button>

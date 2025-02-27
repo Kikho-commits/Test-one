@@ -1,4 +1,3 @@
-
 <form [formGroup]="signupForm" (ngSubmit)="signupUser()" class="signup-form">
   <mat-card-header>
     <mat-card-title class="text-center" style="font-size: 1.5em;">Signup</mat-card-title>
@@ -14,7 +13,10 @@
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Email</mat-label>
     <input matInput type="email" formControlName="email">
-    <mat-error *ngIf="signupForm.get('email')?.invalid && signupForm.get('email')?.touched">
+    <mat-error *ngIf="signupForm.get('email')?.hasError('required') && signupForm.get('email')?.touched">
+      Email is required
+    </mat-error>
+    <mat-error *ngIf="signupForm.get('email')?.hasError('email') && signupForm.get('email')?.touched">
       Enter a valid email
     </mat-error>
   </mat-form-field>
@@ -22,27 +24,31 @@
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Password</mat-label>
     <input matInput type="password" formControlName="password">
-    <mat-error *ngIf="signupForm.get('password')?.invalid && signupForm.get('password')?.touched">
+    <mat-error *ngIf="signupForm.get('password')?.hasError('required') && signupForm.get('password')?.touched">
       Password is required
+    </mat-error>
+    <mat-error *ngIf="signupForm.get('password')?.hasError('pattern') && signupForm.get('password')?.touched">
+      Password must be at least 8 characters, with uppercase, lowercase, a number, and a special character (&#64;$!%*?&)
     </mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Confirm Password</mat-label>
     <input matInput type="password" formControlName="confirmPassword">
+    <mat-error *ngIf="signupForm.get('confirmPassword')?.hasError('required') && signupForm.get('confirmPassword')?.touched">
+      Confirm Password is required
+    </mat-error>
     <mat-error *ngIf="!isPasswordMatch() && signupForm.get('confirmPassword')?.touched">
       Passwords do not match
     </mat-error>
   </mat-form-field>
-
+  <br>  
   <button mat-raised-button color="primary" type="submit" [disabled]="signupForm.invalid || !isPasswordMatch()">
     Sign Up
   </button>
-  
+
   <mat-card *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}
   </mat-card>
- <p style="text-align: center;">Already Have an account ? <a href="/login">Login</a>
- </p>
-
+  <p style="text-align: center;">Already have an account? <a href="/login">Login</a></p>
 </form>

@@ -48,7 +48,7 @@ public class AuthController {
     public ResponseEntity<?> signupUser(@RequestBody SignupRequest signupRequest) {
         User newUser = auth.createUser(signupRequest);
         if (newUser != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+            return ResponseEntity.status(HttpStatus.CREATED).body("User SignUp Successful");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User Already Exist!");
         }

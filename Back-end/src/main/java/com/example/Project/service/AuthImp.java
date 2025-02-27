@@ -7,17 +7,11 @@ import com.example.Project.entity.User;
 import com.example.Project.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthImp implements Auth{
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
     @Autowired
     private UserRepository userRepository;
@@ -56,14 +50,4 @@ public class AuthImp implements Auth{
 
     }
 
-
-    @Override
-    public String valid(LoginRequest loginRequest) {
-
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword()));
-        if(authentication.isAuthenticated()){
-            return "Ok";
-        }
-        return "False";
-    }
 }

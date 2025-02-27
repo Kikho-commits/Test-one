@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from './services/AuthService/auth.service';
 import { SnackbarService } from './services/SnackbarServices/snackbar.service';
+import { DialogService } from './services/DialogServices/dialog.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-root',
@@ -14,10 +16,12 @@ import { SnackbarService } from './services/SnackbarServices/snackbar.service';
 export class AppComponent {
   title = 'auth-app';
 
-  constructor(private router: Router,private authService: AuthService,private snackBar : SnackbarService) {}
+  constructor(private router: Router,private authService: AuthService,private snackBar : SnackbarService,
+   private dialogService : DialogService,private cookieService : CookieService,private route : Router
+  ) {}
+
 
   isWelcomePage(): boolean {
-
     return this.router.url === '/';
   }
 
@@ -26,8 +30,8 @@ export class AppComponent {
   }
 
   logout(){
-    this.authService.removeToken('token');
-    this.snackBar.showSnackBar("User Logged out Successfully",'Ok');
-    this.router.navigate(['/']);
+    this.dialogService.confirmAction('Are you sure want to Logout?',()=>{this.authService.removeToken();
+      this.snackBar.showSnackBar("User Logged out Successfully",'Ok');
+      this.router.navigate(['/']);})
   }
 }
