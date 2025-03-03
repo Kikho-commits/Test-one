@@ -4,8 +4,9 @@ import { ProductService } from '../../services/ProductService/product.service';
 import { Product } from '../../models/auth.models';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { SnackbarService } from '../../services/SnackbarServices/snackbar.service';
-import { MatDialogModule } from '@angular/material/dialog'; 
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { DialogService } from '../../services/DialogServices/dialog.service';
 import { MatInputModule } from '@angular/material/input';
@@ -21,12 +22,13 @@ import { MatTableModule } from '@angular/material/table';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatDialogModule,
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
     MatPaginatorModule,
-    MatTableModule
+    MatTableModule,
   ],
 })
 export class ProductComponent implements OnInit {
@@ -40,12 +42,15 @@ export class ProductComponent implements OnInit {
   currentPage: number = 0;
   pageSize: number = 5;
   totalRecords: number = 0;
+  searchTerm: string = '';
+  sortBy: string = 'id';
+  sortDirection: string = 'asc';
 
   constructor(
     private productService: ProductService,
     private fb: FormBuilder,
     private snackBar: SnackbarService,
-    private dialogService: DialogService 
+    private dialogService: DialogService
   ) {
     this.productForm = this.fb.group({
       productName: ['', Validators.required],
@@ -60,22 +65,42 @@ export class ProductComponent implements OnInit {
   }
 
   getProducts(): void {
-    this.productService.getAllProducts(this.currentPage, this.pageSize).subscribe({
-      next: (data) => {
-        this.products = data.content;
-        this.totalRecords = data.totalElements;
-      },
-      error: (error) => {
-        console.error('Error fetching products:', error);
-        this.products = [];
-        this.totalRecords = 0;
-      }
-    });
+    this.productService
+      .getAllProducts(this.currentPage, this.pageSize, this.searchTerm, this.sortBy, this.sortDirection)
+      .subscribe({
+        next: (data) => {
+          this.products = data?.content || [];
+          this.totalRecords = data?.totalElements || 0;
+          this.paginator.length = this.totalRecords;
+        },
+        error: (error) => {
+          console.error('Error fetching products:', error);
+          this.products = [];
+          this.totalRecords = 0;
+          this.paginator.length = 0;
+          this.snackBar.showSnackBar('Error loading products');
+        },
+      });
   }
 
   onPageChange(event: any): void {
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
+    this.getProducts();
+  }
+
+  onSearch(): void {
+    this.currentPage = 0;
+    this.paginator.pageIndex = 0;
+    this.getProducts();
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.sortBy = 'id';
+    this.sortDirection = 'asc';
+    this.currentPage = 0;
+    this.paginator.pageIndex = 0;
     this.getProducts();
   }
 
@@ -103,12 +128,12 @@ export class ProductComponent implements OnInit {
     }
 
     if (!productNameControl?.value || !supplierNameControl?.value) {
-      this.snackBar.showSnackBar("Product name and supplier name cannot be empty!");
+      this.snackBar.showSnackBar('Product name and supplier name cannot be empty!');
       return;
     }
 
     if (this.productForm.invalid) {
-      this.snackBar.showSnackBar("Please fill in all required fields correctly!");
+      this.snackBar.showSnackBar('Please fill in all required fields correctly!');
       return;
     }
 
@@ -119,11 +144,12 @@ export class ProductComponent implements OnInit {
           next: () => {
             this.getProducts();
             this.toggleProductForm();
-            this.snackBar.showSnackBar("Product Updated!");
+            this.snackBar.showSnackBar('Product Updated!');
           },
           error: (error) => {
             console.error('Error updating product:', error);
-          }
+            this.snackBar.showSnackBar('Error updating product');
+          },
         });
       });
     } else {
@@ -131,11 +157,12 @@ export class ProductComponent implements OnInit {
         next: () => {
           this.getProducts();
           this.toggleProductForm();
-          this.snackBar.showSnackBar("Product Added!");
+          this.snackBar.showSnackBar('Product Added!');
         },
         error: (error) => {
           console.error('Error adding product:', error);
-        }
+          this.snackBar.showSnackBar('Error adding product');
+        },
       });
     }
   }
@@ -146,11 +173,12 @@ export class ProductComponent implements OnInit {
         this.productService.deleteProduct(id).subscribe({
           next: () => {
             this.getProducts();
-            this.snackBar.showSnackBar("Product Deleted!");
+            this.snackBar.showSnackBar('Product Deleted!');
           },
           error: (error) => {
             console.error('Error deleting product:', error);
-          }
+            this.snackBar.showSnackBar('Error deleting product');
+          },
         });
       });
     }

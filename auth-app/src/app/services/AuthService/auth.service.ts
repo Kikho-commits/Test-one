@@ -5,24 +5,25 @@ import { CookieService } from 'ngx-cookie-service';
 import { AuthResponse, LoginUser, RegisterResponse, SignupUser } from '../../models/auth.models';
 import { ProductService } from '../ProductService/product.service';
 import { Router } from '@angular/router';
-
+import { environment } from '../../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root', 
 })
 export class AuthService {
+  private api = environment.apiUrl;
   private token : string = '';
   constructor(private http: HttpClient,private cookieService:CookieService,private productService : ProductService,private router : Router) {
      this.token = this.cookieService.get('token');
   }  
 
   signup(user: SignupUser): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>('http://localhost:8080/api/signup', user);  
+    return this.http.post<RegisterResponse>(`${this.api}/api/signup`, user);  
   }
 
   //Change 1
   login(user: LoginUser): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('http://localhost:8080/api/login', user);  
+    return this.http.post<AuthResponse>(`${this.api}/api/login`, user);  
   }
 
   setToken(token : string){
@@ -35,7 +36,7 @@ export class AuthService {
   }
 
   resetPassword(user : object){
-    return this.http.post('http://localhost:8080/api/resetPassword', user);
+    return this.http.post(`${this.api}/api/resetPassword`, user);
   }
 
   isLoggedIn():boolean{

@@ -1,3 +1,39 @@
+
+<div class="filter-header">
+
+  <div class="sort-container">
+    <select [(ngModel)]="sortBy" (change)="getProducts()">
+      <option value="id">Sort by time</option>
+      <option value="productName">Sort by Product</option>
+      <option value="quantity">Sort by Quantity</option>
+      <option value="price">Sort by Price</option>
+      <option value="supplierName">Sort by Supplier</option>
+    </select>
+      <select [(ngModel)]="sortDirection" (change)="getProducts()">
+      <option value="asc">Ascending</option>
+      <option value="desc">Descending</option>
+    </select>
+  </div>
+
+  
+  <div class="right-container">
+    <div class="search-container">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (keyup.enter)="onSearch()"
+        placeholder="Search products..."
+        class="search-input"
+      />
+      <button (click)="onSearch()">Search</button>
+    </div>
+    <div class="add-button">
+      <button (click)="toggleProductForm()" *ngIf="!productFormVisible" class="add-btn">Add Product</button>
+    </div>
+  </div>
+</div>
+
+
 <div class="product-form-row" *ngIf="productFormVisible">
   <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="form-container">
     <input formControlName="productName" placeholder="Product Name" required />
@@ -8,10 +44,6 @@
     <button type="submit">{{ currentProduct?.id ? 'Update' : 'Create' }}</button>
     <button type="button" class="cancel-btn" (click)="toggleProductForm()">Cancel</button>
   </form>
-</div>
-
-<div class="addBtn">
-  <button (click)="toggleProductForm()" *ngIf="!productFormVisible">Add Product</button>
 </div>
 
 
@@ -39,13 +71,15 @@
   </tbody>
 </table>
 
+
 <ng-template #noProducts>
   <p>No products available</p>
 </ng-template>
+
 
 <mat-paginator
   [length]="totalRecords"
   [pageSize]="pageSize"
   [pageSizeOptions]="[5, 10, 20]"
-  (page)="onPageChange($event)">
-</mat-paginator>
+  (page)="onPageChange($event)"
+></mat-paginator>
