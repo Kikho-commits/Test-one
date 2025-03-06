@@ -1,9 +1,10 @@
 package com.example.Project.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name="products")
+@Table(name="product_table")
 public class Product {
 
     @Id
@@ -13,44 +14,56 @@ public class Product {
     private int quantity;
     private double price;
     private String supplierName;
+    private Boolean deleted = false;
 
-    public Long getId() {
-        return id;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdTime;
+
+    @Column
+    private LocalDateTime updatedTime;
+
+    @Column
+    private LocalDateTime deletedTime;
+
+    @Column(nullable = false)
+    private String email;
+
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getProductName() { return productName; }
+    public void setProductName(String productName) { this.productName = productName; }
+
+    public LocalDateTime getDeletedTime() {
+        return deletedTime;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setDeletedTime(LocalDateTime deletedTime) {
+        this.deletedTime = deletedTime;
     }
 
-    public String getProductName() {
-        return productName;
-    }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
 
-    public int getQuantity() {
-        return quantity;
-    }
+    public String getSupplierName() { return supplierName; }
+    public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
+    public Boolean getDeleted() { return deleted; }
+    public void setDeleted(Boolean deleted) { this.deleted = deleted; }
 
-    public double getPrice() {
-        return price;
-    }
+    public LocalDateTime getCreatedTime() { return createdTime; }
+    public void setCreatedTime(LocalDateTime createdTime) { this.createdTime = createdTime; }
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
+    public LocalDateTime getUpdatedTime() { return updatedTime; }
+    public void setUpdatedTime(LocalDateTime updatedTime) { this.updatedTime = updatedTime; }
 
-    public String getSupplierName() {
-        return supplierName;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setSupplierName(String supplierName) {
-        this.supplierName = supplierName;
-    }
+
 }

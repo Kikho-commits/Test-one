@@ -1,33 +1,29 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
-import { AuthService } from './services/AuthService/auth.service';
-import { SnackbarService } from './services/SnackbarServices/snackbar.service';
+  import { Component } from '@angular/core';
+  import { CommonModule } from '@angular/common';
+  import { RouterModule, Router } from '@angular/router';
 
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './app.component.html' ,
-  styleUrls: ['./app.component.css']
-})
-export class AppComponent {
-  title = 'auth-app';
+  @Component({
+    selector: 'app-root',
+    standalone: true,
+    imports: [CommonModule, RouterModule],
+    templateUrl: './app.component.html' ,
+    styleUrls: ['./app.component.css']
+  })
+  export class AppComponent {
+    title = 'auth-app';
+    
 
-  constructor(private router: Router,private authService: AuthService,private snackBar : SnackbarService) {}
+    constructor(private router: Router) {}
 
-  isWelcomePage(): boolean {
+    isLogin() : boolean{
+      return this.router.url==='/login'||this.router.url==='/';
+    }
+    isInventory():boolean{
+      return this.router.url==='/inventory';
+    }
 
-    return this.router.url === '/';
+    isReset() : boolean{
+      return this.router.url==='/resetPassword'
+    }
+
   }
-
-  isInventory():boolean{
-    return this.router.url==='/inventory';
-  }
-
-  logout(){
-    this.authService.removeToken('token');
-    this.snackBar.showSnackBar("User Logged out Successfully",'Ok');
-    this.router.navigate(['/']);
-  }
-}

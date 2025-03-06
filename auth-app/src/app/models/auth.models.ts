@@ -12,14 +12,11 @@ export interface SignupUser{
 
 export interface AuthResponse{
     jwt : string,
-    message : string
+    name : string
 }
 
 export interface RegisterResponse{
-    id:number,
-    username : string,
-    email : string,
-    password : string
+    message : string
 }
 
 export interface Product {
@@ -29,3 +26,9 @@ export interface Product {
     price: number;
     supplierName : string;
   }
+
+export interface PasswordRequest{
+    email : string,
+    currentPassword : string,
+    newPassword : string
+}

@@ -1,107 +1,200 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ProductService } from '../../services/ProductService/product.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ProductService, ProductSummary } from '../../services/ProductService/product.service';
 import { Product } from '../../models/auth.models';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { SnackbarService } from '../../services/SnackbarServices/snackbar.service';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { DialogService } from '../../services/DialogServices/dialog.service';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../services/AuthService/auth.service';
+import { Router } from '@angular/router';
+import { ProductDialogComponent } from '../dialog/product-dialog/product-dialog.component';
 
 @Component({
   selector: 'app-product',
   standalone: true,
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css'],
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatIconModule
+  ],
 })
 export class ProductComponent implements OnInit {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   products: Product[] = [];
-  productFormVisible: boolean = false;
-  productForm: FormGroup;
-  currentProduct: Product | null = null;
-
-  currentPage: number = 0; 
+  currentPage: number = 0;
   pageSize: number = 5;
-  totalPages: number = 0;
+  totalRecords: number = 0;
+  searchTerm: string = '';
+  sortBy: string = 'id';
+  sortDirection: string = 'asc';
+  isFiltered: boolean = false;
+  username: string = '';
+  showDropdown: boolean = false;
 
-  constructor(private productService: ProductService, private fb: FormBuilder, private snackBar: SnackbarService) {
-    this.productForm = this.fb.group({
-      productName: ['', Validators.required],
-      quantity: [0, [Validators.required, Validators.min(1)]],
-      price: [0, [Validators.required, Validators.min(1)]],
-      supplierName: ['', Validators.required],
-    });
+  totalProducts: number = 0;
+  totalValue: number = 0;
+
+  private searchTimeout : any;
+
+  constructor(
+    private productService: ProductService,
+    private snackBar: SnackbarService,
+    private dialogService: DialogService,
+    private authService: AuthService,
+    private router: Router,
+    private dialog: MatDialog 
+  ) {
+    this.username = authService.getUsername();
   }
 
   ngOnInit(): void {
     this.getProducts();
+    this.getSummary();
   }
 
   getProducts(): void {
-    this.productService.getAllProducts(this.currentPage, this.pageSize).subscribe({
-      next: (data) => {
-        this.products = data.content; 
-        this.totalPages = data.totalPages;
-      },
-      error: (error) => {
-        console.error('Error fetching products:', error);
-        this.products = [];
-        this.totalPages = 0;
+    this.productService
+      .getAllProducts(this.currentPage, this.pageSize, this.searchTerm, this.sortBy, this.sortDirection)
+      .subscribe((data) => {
+        this.products = data?.content || [];
+        this.totalRecords = data?.totalElements || 0;
+        this.paginator.length = this.totalRecords;
+        this.isFiltered = this.searchTerm !== '' || this.sortBy !== 'id' || this.sortDirection !== 'asc';
+      });
+  }
+
+  getSummary(): void {
+    this.productService.getProductSummary().subscribe((summaryData) => {
+      this.totalProducts = summaryData?.totalAvailableProducts || 0;
+      this.totalValue = summaryData?.totalAvailableValue || 0;
+    });
+  }
+
+  onSearchInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    this.searchTimeout = setTimeout(() => {
+      this.searchTerm = value;
+      this.currentPage = 0;
+      this.paginator.pageIndex = 0;
+      this.getProducts();
+    }, 300);
+  }
+
+  onPageChange(event: any): void {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.getProducts();
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.currentPage = 0;
+    this.paginator.pageIndex = 0;
+    this.getProducts();
+  }
+
+  toggleProductForm(): void {
+    this.openProductDialog(null); 
+  }
+
+  editProduct(product: Product): void {
+    this.openProductDialog(product); 
+  }
+
+  openProductDialog(product: Product | null): void {
+    const dialogRef = this.dialog.open(ProductDialogComponent, {
+      width: '400px',
+      data: { product }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        if (product) {
+          const productId = product.id || 0;
+          this.dialogService.confirmAction('Are you sure you want to update this product?', () => {
+            this.productService.updateProduct(productId, result).subscribe(() => {
+              this.getProducts();
+              this.getSummary();
+              this.snackBar.showSnackBar('Product Updated!');
+            });
+          });
+        } else {
+          this.productService.addProduct(result).subscribe(() => {
+            this.getProducts();
+            this.getSummary();
+            this.snackBar.showSnackBar('Product Added!');
+          });
+        }
       }
     });
   }
 
-  changePage(direction: number): void {
-    const newPage = this.currentPage + direction;
-    if (newPage >= 0 && newPage < this.totalPages) {
-      this.currentPage = newPage;
-      this.getProducts();
-    }
-  }
-
-  isPreviousDisabled(): boolean {
-    return this.currentPage <= 0;
-  }
-
-  isNextDisabled(): boolean {
-    return this.currentPage >= this.totalPages - 1;
-  }
-
-  toggleProductForm(): void {
-    this.productFormVisible = !this.productFormVisible;
-    this.productForm.reset();
-    this.currentProduct = null;
-  }
-
-  editProduct(product: Product): void {
-    this.productFormVisible = true;
-    this.currentProduct = product;
-    this.productForm.patchValue(product);
-  }
-
-  onSubmit(): void {
-    if (this.productForm.invalid) return;
-
-    if (this.currentProduct?.id) {
-      this.productService.updateProduct(this.currentProduct.id, this.productForm.value).subscribe(() => {
-        this.getProducts();
-        this.toggleProductForm();
-        this.snackBar.showSnackBar("Product Updated!");
-      });
-    } else {
-      this.productService.addProduct(this.productForm.value).subscribe(() => {
-        this.getProducts();
-        this.toggleProductForm();
-        this.snackBar.showSnackBar("Product Added!");
-      });
-    }
-  }
-
-  deleteProduct(id: number | undefined): void {
+  deleteProduct(id?: number): void {
     if (id !== undefined) {
-      this.productService.deleteProduct(id).subscribe(() => {
-        this.getProducts();
+      this.dialogService.confirmAction('Are you sure you want to delete this product?', () => {
+        this.productService.deleteProduct(id).subscribe(() => {
+          this.getProducts();
+          this.getSummary();
+          this.snackBar.showSnackBar('Product Deleted!');
+        });
       });
-      this.snackBar.showSnackBar("Product Deleted!");
     }
+  }
+
+  sort(column: string): void {
+    if (this.sortBy === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = column;
+      this.sortDirection = 'asc';
+    }
+    this.currentPage = 0;
+    this.paginator.pageIndex = 0;
+    this.getProducts();
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.sortBy = 'id';
+    this.sortDirection = 'asc';
+    this.currentPage = 0;
+    this.paginator.pageIndex = 0;
+    this.getProducts();
+  }
+
+  logout(): void {
+    this.dialogService.confirmAction('Are you sure want to Logout?', () => {
+      this.authService.removeToken();
+      this.snackBar.showSnackBar('User Logged out Successfully', 'Ok');
+      this.router.navigate(['/']);
+    });
+  }
+
+  toggleDropdown(): void {
+    this.showDropdown = !this.showDropdown;
   }
 }

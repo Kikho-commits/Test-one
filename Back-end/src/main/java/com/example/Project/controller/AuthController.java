@@ -16,43 +16,41 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class AuthController {
 
-    private final CustomerServiceImpl customerService;
-    private final JwtUtil jwtUtil;
     @Autowired
-    private Auth auth;
-
+    private  CustomerServiceImpl customerService;
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private  JwtUtil jwtUtil;
+    @Autowired
+    private  Auth auth;
+    @Autowired
+    private  AuthenticationManager authenticationManager;
 
-
-    public AuthController(CustomerServiceImpl customerService, JwtUtil jwtUtil) {
-        this.customerService = customerService;
-        this.jwtUtil = jwtUtil;
-
-    }
 
 
     @PostMapping("/signup")
     public ResponseEntity<?> signupUser(@RequestBody SignupRequest signupRequest) {
         User newUser = auth.createUser(signupRequest);
         if (newUser != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User SignUp Successful");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User Already Exist!");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User SignUp Successful");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
-
     }
 
     User usr;
@@ -71,7 +69,7 @@ public class AuthController {
         final String jwt = jwtUtil.generateToken(userDetails.getUsername()  );
 
 
-        return new LoginResponse(jwt);
+        return new LoginResponse(jwt,auth.getUsername(userDetails.getUsername()));
     }
     @PostMapping("/resetPassword")
     public ResponseEntity<?> resetPassword(@RequestBody ResetRequest resetRequest){
