@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../services/AuthService/auth.service';  
+import { AuthService } from '../../../services/AuthService/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SignupUser } from '../../models/auth.models';
+import { SignupUser } from '../../../models/auth.models';
 import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { SnackbarService } from '../../services/SnackbarServices/snackbar.service';
+import { SnackbarService } from '../../../services/SnackbarServices/snackbar.service';
 import { MatError } from '@angular/material/form-field';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -34,10 +34,7 @@ export class SignupComponent implements OnInit {
     confirmPassword: new FormControl('', Validators.required)
   });
 
-  
-  
   errorMessage : string ='';
-
 
   constructor(private authService: AuthService,private router: Router,private snackBar : SnackbarService,private route : Router,private cookieService : CookieService) {}
   ngOnInit() : void{
@@ -58,7 +55,6 @@ export class SignupComponent implements OnInit {
       this.authService.signup(this.signupForm.value as SignupUser).subscribe(
         (response) => {
           console.log(JSON.stringify(response.message));
-          
           this.snackBar.showSnackBar('User Registered Successfully!','OK');
           this.router.navigate(['/login']);
         },

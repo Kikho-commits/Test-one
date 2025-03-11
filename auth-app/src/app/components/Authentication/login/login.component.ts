@@ -6,11 +6,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { SnackbarService } from '../../services/SnackbarServices/snackbar.service';
-import { AuthService } from '../../services/AuthService/auth.service';
+import { SnackbarService } from '../../../services/SnackbarServices/snackbar.service';
+import { AuthService } from '../../../services/AuthService/auth.service'; 
 import { CookieService } from 'ngx-cookie-service';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms'; 
-import { LoginUser } from '../../models/auth.models';
+import { LoginUser } from '../../../models/auth.models';
 import { Router } from '@angular/router';
 
 @Component({
@@ -40,6 +40,7 @@ export class LoginComponent {
       this.authService.login(this.loginForm.value as LoginUser).subscribe(
         (response) => {
           this.authService.setToken(response.jwt);
+          this.authService.setUsername(response.name);
           this.snackBar.showSnackBar("Login Successful!", 'Ok');
           this.route.navigate(['/inventory']);
         },

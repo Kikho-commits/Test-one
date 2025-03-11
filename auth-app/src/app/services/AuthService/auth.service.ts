@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http'; 
+import { HttpClient } from '@angular/common/http'; 
 import { Observable } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthResponse, LoginUser, RegisterResponse, SignupUser } from '../../models/auth.models';
-import { ProductService } from '../ProductService/product.service';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.prod';
 
@@ -13,7 +12,8 @@ import { environment } from '../../../environments/environment.prod';
 export class AuthService {
   private api = environment.apiUrl;
   private token : string = '';
-  constructor(private http: HttpClient,private cookieService:CookieService,private productService : ProductService,private router : Router) {
+  private username : string = '';
+  constructor(private http: HttpClient,private cookieService:CookieService,private router : Router) {
      this.token = this.cookieService.get('token');
   }  
 
@@ -41,5 +41,13 @@ export class AuthService {
 
   isLoggedIn():boolean{
     return this.cookieService.check('token');
+  }
+
+  setUsername(name : string){
+    this.username=name;
+  }
+
+  getUsername(){
+    return this.username;
   }
 }

@@ -1,85 +1,107 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <h6>Inventory</h6>
+    <div class="user-profile" (click)="toggleDropdown()">
+      <div class="avatar">
+        <span>{{username.charAt(0).toUpperCase() || 'U'}}</span>
+      </div>
+      <label class="username" *ngIf="username">{{username}}</label>
+      <div class="dropdown" *ngIf="showDropdown">
+        <button (click)="logout()">Logout</button>
+        <button (click)="reset()">Reset Password</button>
+      </div>
+    </div>
+  </div>
+</nav>
 
-<div class="filter-header">
-
-  <div class="sort-container">
-    <select [(ngModel)]="sortBy" (change)="getProducts()">
-      <option value="id">Sort by time</option>
-      <option value="productName">Sort by Product</option>
-      <option value="quantity">Sort by Quantity</option>
-      <option value="price">Sort by Price</option>
-      <option value="supplierName">Sort by Supplier</option>
-    </select>
-      <select [(ngModel)]="sortDirection" (change)="getProducts()">
-      <option value="asc">Ascending</option>
-      <option value="desc">Descending</option>
-    </select>
+<div class="page-container">
+  <!-- Summary Container -->
+  <div class="summary-container">
+    <div class="summary-section">
+      <h3>Total Available Products</h3>
+      <p class="value">{{ totalProducts }}</p>
+    </div>
+    <div class="summary-section">
+      <h3>Total Inventory Value</h3>
+      <p class="value">₹{{ totalValue }}</p>
+    </div>
   </div>
 
   
-  <div class="right-container">
-    <div class="search-container">
-      <input
-        type="text"
-        [(ngModel)]="searchTerm"
-        (keyup.enter)="onSearch()"
-        placeholder="Search products..."
-        class="search-input"
-      />
-      <button (click)="onSearch()">Search</button>
-    </div>
-    <div class="add-button">
-      <button (click)="toggleProductForm()" *ngIf="!productFormVisible" class="add-btn">Add Product</button>
+  <div class="filter-header">
+    <div class="right-container">
+      <div class="search-container">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchInput($event)"
+          placeholder="Search products..."
+          class="search-input"
+        />
+      </div>
+      <div class="add-button">
+        <button (click)="toggleProductForm()" class="add-btn">
+          Add Product
+        </button>
+      </div>
     </div>
   </div>
+
+  <!-- Product Table -->
+  <table *ngIf="products.length > 0; else noProducts">
+    <thead>
+      <tr>
+        <th (click)="sort('productName')">
+          Product Name
+          <span *ngIf="sortBy === 'productName'">{{sortDirection === 'asc' ? ' ↑' : ' ↓'}}</span>
+        </th>
+        <th (click)="sort('quantity')">
+          Quantity
+          <span *ngIf="sortBy === 'quantity'">{{sortDirection === 'asc' ? ' ↑' : ' ↓'}}</span>
+        </th>
+        <th (click)="sort('price')">
+          Price
+          <span *ngIf="sortBy === 'price'">{{sortDirection === 'asc' ? ' ↑' : ' ↓'}}</span>
+        </th>
+        <th (click)="sort('supplierName')">
+          Supplier Name
+          <span *ngIf="sortBy === 'supplierName'">{{sortDirection === 'asc' ? ' ↑' : ' ↓'}}</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let product of products" class="product-row">
+        <td>{{ product.productName }}</td>
+        <td>{{ product.quantity }}</td>
+        <td>₹{{ product.price }}</td>
+        <td>{{ product.supplierName }}</td>
+        <td class="actions-cell">
+          <div class="actions-container">
+            <button mat-icon-button (click)="editProduct(product)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteProduct(product.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noProducts>
+    <p>No products available</p>
+  </ng-template>
+
+  <!-- Footer Controls -->
+  <div class="footer-controls">
+    <button *ngIf="isFiltered" class="clear-btn" (click)="clearFilters()">Clear</button>
+    <mat-paginator
+      [length]="totalRecords"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 20]"
+      (page)="onPageChange($event)"
+    ></mat-paginator>
+  </div>
+
 </div>
-
-
-<div class="product-form-row" *ngIf="productFormVisible">
-  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="form-container">
-    <input formControlName="productName" placeholder="Product Name" required />
-    <input formControlName="quantity" placeholder="Quantity" type="number" required />
-    <input formControlName="price" placeholder="₹ Price" type="number" required />
-    <input formControlName="supplierName" placeholder="Supplier Name" required />
-
-    <button type="submit">{{ currentProduct?.id ? 'Update' : 'Create' }}</button>
-    <button type="button" class="cancel-btn" (click)="toggleProductForm()">Cancel</button>
-  </form>
-</div>
-
-
-<table *ngIf="products.length > 0; else noProducts">
-  <thead>
-    <tr>
-      <th>Product Name</th>
-      <th>Quantity</th>
-      <th>Price</th>
-      <th>Supplier Name</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let product of products">
-      <td>{{ product.productName }}</td>
-      <td>{{ product.quantity }}</td>
-      <td>₹{{ product.price }}</td>
-      <td>{{ product.supplierName }}</td>
-      <td>
-        <button (click)="editProduct(product)">Edit</button>
-        <button (click)="deleteProduct(product.id)">Delete</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-
-<ng-template #noProducts>
-  <p>No products available</p>
-</ng-template>
-
-
-<mat-paginator
-  [length]="totalRecords"
-  [pageSize]="pageSize"
-  [pageSizeOptions]="[5, 10, 20]"
-  (page)="onPageChange($event)"
-></mat-paginator>

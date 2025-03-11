@@ -4,12 +4,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule} from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AuthService } from '../../services/AuthService/auth.service';
-import { SnackbarService } from '../../services/SnackbarServices/snackbar.service';
+import { AuthService } from '../../../services/AuthService/auth.service';
+import { SnackbarService } from '../../../services/SnackbarServices/snackbar.service';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { FormGroup ,FormControl,Validators } from '@angular/forms';
-import { PasswordRequest } from '../../models/auth.models';
+import { PasswordRequest } from '../../../models/auth.models';
 
 @Component({
   selector: 'app-reset-password',
@@ -33,7 +33,7 @@ export class ResetPasswordComponent {
   });
   
 
-  constructor(private authService:AuthService,private snackBar:SnackbarService,private router:Router,private cookieService : CookieService,private route : Router){};
+  constructor(private authService:AuthService,private snackBar:SnackbarService,private router:Router){};
  
   resetPassword(){
       if(this.resetForm.valid){
@@ -41,7 +41,7 @@ export class ResetPasswordComponent {
         this.authService.resetPassword(this.resetForm.value as PasswordRequest).subscribe(
           (response)=>{
             this.snackBar.showSnackBar("Password Changed Successfully!");
-            this.router.navigate(['./']);
+            this.router.navigate(['/inventory']);
           },
           (error)=>{
             if(error.status === 400){

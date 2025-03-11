@@ -1,16 +1,9 @@
-<nav class="navbar">
+<nav class="navbar" *ngIf="isAuth()">
   <div class="nav-container">
-    <h1>{{isInventory()?"Inventory":"Web Authentication"}}</h1>
-    <div class="nav-buttons">
-      <button *ngIf="isWelcomePage()" routerLink="/login">Login</button>
-      <button *ngIf="isWelcomePage()" routerLink="/signup">Signup</button>
-      <button *ngIf="isInventory()" (click)="logout()">Logout</button>
-      <button *ngIf="isWelcomePage()" routerLink="/resetPassword">Reset Password</button>
-      <button *ngIf="!isWelcomePage() && !isInventory()" routerLink="/">Home</button>
-    </div>
+    <h1>{{"Web Authentication"}}</h1>
+   
   </div>
 </nav>
-<h1 *ngIf="isWelcomePage()" id="msg">Inventory</h1>
 <div class="content">
   <router-outlet></router-outlet>
 </div>

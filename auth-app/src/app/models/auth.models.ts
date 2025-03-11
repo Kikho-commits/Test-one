@@ -12,7 +12,7 @@ export interface SignupUser{
 
 export interface AuthResponse{
     jwt : string,
-    message : string
+    name : string
 }
 
 export interface RegisterResponse{

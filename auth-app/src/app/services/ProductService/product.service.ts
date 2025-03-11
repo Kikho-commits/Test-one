@@ -5,13 +5,17 @@ import { Product } from '../../models/auth.models';
 import { CookieService } from 'ngx-cookie-service';
 import { environment } from '../../../environments/environment.prod';
 
-
 export interface ProductResponse {
   content: Product[];
   page: number;
   size: number;
   totalElements: number;
   totalPages: number;
+}
+
+export interface ProductSummary {
+  totalAvailableProducts: number;
+  totalAvailableValue: number;
 }
 
 @Injectable({
@@ -24,6 +28,9 @@ export class ProductService {
 
   private createHeaders(): HttpHeaders {
     const token = this.cookieService.get('token');
+    if (!token) {
+      console.warn('No token found in cookies');
+    }
     return new HttpHeaders({
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -63,5 +70,9 @@ export class ProductService {
 
   deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.createHeaders() });
+  }
+
+  getProductSummary(): Observable<ProductSummary> {
+    return this.http.get<ProductSummary>(`${this.apiUrl}/summary`, { headers: this.createHeaders() });
   }
 }
